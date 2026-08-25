@@ -1,0 +1,50 @@
+---
+import SiteLayout from '../layouts/SiteLayout.astro';
+import SongList from '../components/SongList.astro';
+import { featuredCategorySlug } from '../data/seed-catalog';
+import { getStaticCatalog } from '../lib/services/static-catalog';
+import { withBase } from '../utils/paths';
+
+const catalog = getStaticCatalog();
+const [featured, featuredSongs] = await Promise.all([
+  catalog.categories.getCategoryBySlug(featuredCategorySlug),
+  catalog.songs.getSongsByCategorySlug(featuredCategorySlug),
+]);
+---
+
+<SiteLayout
+  title="Lyric-Guess"
+  description="A listening-room game: guess the song from a lyric fragment before the countdown ends."
+  canonicalPath="/"
+  current="home"
+>
+  <section class="home-hero">
+    <div>
+      <p class="kicker">A game of recognition</p>
+      <h1 class="display">Guess the song from the words it leaves behind.</h1>
+    </div>
+    <div>
+      <p class="lede">
+        A lyric occupies the room. The clock is quiet and then it is not. When the last second
+        falls, the title, the artist, and a playable fragment arrive.
+      </p>
+      <div class="btn-row" style="margin-top: 2rem;">
+        <a class="ghost-link" href={withBase('/play')}>Begin</a>
+        <a class="ghost-link" href={withBase('/categories')}>Browse genres</a>
+      </div>
+    </div>
+  </section>
+
+  <section class="featured">
+    <div class="featured__head">
+      <div>
+        <p class="kicker">Featured category</p>
+        <h2 class="display" style="font-size: clamp(2.5rem, 6vw, 4.5rem);">
+          {featured?.name ?? 'Electronic'}
+        </h2>
+      </div>
+      <a class="ghost-link" href={withBase(`/categories/${featuredCategorySlug}`)}>Open the room</a>
+    </div>
+    <SongList songs={featuredSongs} />
+  </section>
+</SiteLayout>

@@ -1,0 +1,29 @@
+---
+import CategoryPills from '../../components/CategoryPills.astro';
+import SiteLayout from '../../layouts/SiteLayout.astro';
+import { getStaticCatalog } from '../../lib/services/static-catalog';
+import { withBase } from '../../utils/paths';
+
+const categories = await getStaticCatalog().categories.getCategories();
+---
+
+<SiteLayout
+  title="Categories · Lyric-Guess"
+  description="Move through Lyric-Guess by genre: pop, rock, electronic, jazz, and more."
+  canonicalPath="/categories"
+  current="categories"
+>
+  <section class="page-hero">
+    <p class="kicker">Catalog</p>
+    <h1 class="display">Rooms, not playlists.</h1>
+    <p class="lede">Each category is a temperature. Pick one and stay for a round.</p>
+  </section>
+  <CategoryPills categories={categories} />
+  <nav class="category-index" aria-label="All categories">
+    {
+      categories.map((category) => (
+        <a href={withBase(`/categories/${category.slug}`)}>{category.name}</a>
+      ))
+    }
+  </nav>
+</SiteLayout>

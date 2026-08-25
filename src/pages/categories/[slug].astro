@@ -1,0 +1,41 @@
+---
+import CategoryPills from '../../components/CategoryPills.astro';
+import SiteLayout from '../../layouts/SiteLayout.astro';
+import SongList from '../../components/SongList.astro';
+import { getStaticCatalog } from '../../lib/services/static-catalog';
+import { withBase } from '../../utils/paths';
+
+export async function getStaticPaths() {
+  const categories = await getStaticCatalog().categories.getCategories();
+  return categories.map((category) => ({
+    params: { slug: category.slug },
+  }));
+}
+
+const { slug } = Astro.params;
+const catalog = getStaticCatalog();
+const category = slug ? await catalog.categories.getCategoryBySlug(slug) : null;
+const categories = await catalog.categories.getCategories();
+const songs = slug ? await catalog.songs.getSongsByCategorySlug(slug) : [];
+
+if (!category) {
+  throw new Error(`Unknown category: ${slug ?? ''}`);
+}
+---
+
+<SiteLayout
+  title={`${category.name} · Lyric-Guess`}
+  description={`Play Lyric-Guess with ${category.name} songs.`}
+  canonicalPath={`/categories/${category.slug}`}
+  current="categories"
+>
+  <section class="page-hero">
+    <p class="kicker">Category</p>
+    <h1 class="display">{category.name}</h1>
+    <div class="btn-row">
+      <a class="ghost-link" href={withBase(`/play?category=${category.slug}`)}>Play this room</a>
+    </div>
+  </section>
+  <CategoryPills categories={categories} currentSlug={category.slug} />
+  <SongList songs={songs} />
+</SiteLayout>

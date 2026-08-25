@@ -1,0 +1,37 @@
+---
+import type { Category } from '../types/catalog';
+import { withBase } from '../utils/paths';
+
+type Props = {
+  categories: Category[];
+  currentSlug?: string | undefined;
+  includeAll?: boolean;
+};
+
+const { categories, currentSlug, includeAll = true } = Astro.props;
+---
+
+<div class="pills" role="navigation" aria-label="Categories">
+  {
+    includeAll && (
+      <a
+        class:list={['pill', { 'is-active': !currentSlug }]}
+        href={withBase('/categories')}
+        aria-current={!currentSlug ? 'page' : undefined}
+      >
+        All
+      </a>
+    )
+  }
+  {
+    categories.map((category) => (
+      <a
+        class:list={['pill', { 'is-active': currentSlug === category.slug }]}
+        href={withBase(`/categories/${category.slug}`)}
+        aria-current={currentSlug === category.slug ? 'page' : undefined}
+      >
+        {category.name}
+      </a>
+    ))
+  }
+</div>

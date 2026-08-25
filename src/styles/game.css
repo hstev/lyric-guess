@@ -1,0 +1,263 @@
+.game {
+  position: relative;
+  min-height: 100svh;
+  isolation: isolate;
+  overflow: clip;
+  color: var(--color-paper);
+}
+
+.atmosphere {
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background: var(--color-void);
+}
+
+.atmosphere__blob {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(70px);
+  opacity: 0.72;
+  animation: drift 18s var(--ease-out) infinite alternate;
+}
+
+.atmosphere__blob--a {
+  width: 58vw;
+  height: 58vw;
+  left: -12vw;
+  top: -18vw;
+  background: hsl(var(--hue-a) var(--sat) var(--light));
+}
+
+.atmosphere__blob--b {
+  width: 46vw;
+  height: 46vw;
+  right: -10vw;
+  top: 10vh;
+  background: hsl(var(--hue-b) var(--sat) calc(var(--light) - 8%));
+  animation-delay: -6s;
+}
+
+.atmosphere__blob--c {
+  width: 40vw;
+  height: 40vw;
+  left: 28vw;
+  bottom: -16vw;
+  background: hsl(var(--hue-c) 48% 28%);
+  animation-delay: -11s;
+}
+
+.atmosphere__noise,
+.atmosphere__scrim {
+  position: absolute;
+  inset: 0;
+}
+
+.atmosphere__noise {
+  opacity: 0.16;
+  mix-blend-mode: overlay;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.55'/%3E%3C/svg%3E");
+}
+
+.atmosphere__scrim {
+  background:
+    linear-gradient(180deg, rgb(7 6 11 / 0.28) 0%, rgb(7 6 11 / 0.18) 38%, rgb(7 6 11 / 0.72) 100%),
+    radial-gradient(120% 80% at 50% 20%, transparent 20%, rgb(7 6 11 / 0.5) 100%);
+}
+
+.game-bar {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  padding: var(--page-pad);
+  padding-bottom: 0;
+}
+
+.game-bar .wordmark {
+  opacity: 0.78;
+  font-size: var(--text-md);
+}
+
+.timer {
+  text-align: right;
+}
+
+.timer__value {
+  font-family: var(--font-display);
+  font-variant-numeric: tabular-nums;
+  font-size: clamp(3rem, 10vw, 7rem);
+  line-height: 0.8;
+  letter-spacing: -0.08em;
+  display: block;
+}
+
+.timer__label {
+  font-size: var(--text-xs);
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--color-paper-soft);
+}
+
+.game-stage {
+  padding: var(--page-pad);
+  min-height: calc(100svh - 12rem);
+  display: grid;
+  align-content: center;
+}
+
+.lyrics {
+  font-family: var(--font-display);
+  font-size: var(--text-lyrics);
+  line-height: var(--leading-snug);
+  letter-spacing: -0.05em;
+  max-width: 16ch;
+  white-space: pre-line;
+  text-wrap: pretty;
+}
+
+.lyrics--enter {
+  animation: rise var(--duration-slow) var(--ease-out) both;
+}
+
+.game.is-revealed .lyrics {
+  filter: blur(10px);
+  opacity: 0.18;
+  transform: translateY(-0.6rem);
+  transition:
+    filter var(--duration-med) var(--ease-out),
+    opacity var(--duration-med) var(--ease-out),
+    transform var(--duration-med) var(--ease-out);
+}
+
+.reveal {
+  position: absolute;
+  inset: auto var(--page-pad) 8.5rem;
+  max-width: 36rem;
+  display: grid;
+  gap: var(--space-3);
+  animation: rise var(--duration-med) var(--ease-out) both;
+}
+
+/* `display: grid` above would otherwise override the UA [hidden] rule. */
+.reveal[hidden] {
+  display: none;
+}
+
+.reveal__kicker {
+  letter-spacing: 0.24em;
+  text-transform: uppercase;
+  font-size: var(--text-xs);
+  color: var(--color-accent);
+}
+
+.reveal__title {
+  font-family: var(--font-display);
+  font-size: clamp(2.4rem, 6vw, 4.5rem);
+  line-height: 0.95;
+  letter-spacing: -0.06em;
+}
+
+.game-actions {
+  position: sticky;
+  bottom: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-4);
+  align-items: center;
+  padding: var(--page-pad);
+  background: linear-gradient(to top, rgb(7 6 11 / 0.72), transparent);
+}
+
+.game-actions button,
+.game-actions a {
+  min-height: 2.75rem;
+}
+
+.timer-select {
+  margin-left: auto;
+  color: var(--color-mute);
+  font-size: var(--text-sm);
+}
+
+.timer-select select {
+  background: transparent;
+  border: 0;
+  border-bottom: 1px solid var(--color-line-strong);
+  padding: 0.2rem;
+}
+
+.player-sheet {
+  position: fixed;
+  inset: auto 0 0;
+  z-index: var(--z-sheet);
+  background: rgb(16 14 22 / 0.92);
+  backdrop-filter: blur(18px);
+  border-top: 1px solid var(--color-line);
+  padding: var(--space-5) var(--page-pad) var(--space-6);
+  display: grid;
+  gap: var(--space-4);
+}
+
+.player-sheet iframe {
+  width: min(100%, 48rem);
+  aspect-ratio: 16 / 9;
+  border: 0;
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-soft);
+}
+
+.player-sheet[hidden] {
+  display: none;
+}
+
+.status-copy {
+  font-family: var(--font-display);
+  font-size: clamp(2rem, 5vw, 3.5rem);
+  letter-spacing: -0.05em;
+  max-width: 14ch;
+}
+
+@keyframes drift {
+  from {
+    transform: translate3d(0, 0, 0) scale(1);
+  }
+  to {
+    transform: translate3d(4%, 6%, 0) scale(1.08);
+  }
+}
+
+@keyframes rise {
+  from {
+    opacity: 0;
+    transform: translateY(1.25rem);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@media (min-width: 900px) {
+  .game-stage {
+    padding-left: clamp(2rem, 8vw, 8rem);
+  }
+
+  .lyrics {
+    max-width: 18ch;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .atmosphere__blob,
+  .lyrics,
+  .lyrics--enter,
+  .reveal {
+    animation: none;
+  }
+
+  .game.is-revealed .lyrics {
+    filter: none;
+    opacity: 0.28;
+    transform: none;
+  }
+}

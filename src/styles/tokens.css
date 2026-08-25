@@ -1,0 +1,68 @@
+:root {
+  --color-void: #07060b;
+  --color-ink: #100e16;
+  --color-elevated: #18151f;
+  --color-line: rgb(244 239 230 / 0.12);
+  --color-line-strong: rgb(244 239 230 / 0.22);
+  --color-paper: #f4efe6;
+  --color-paper-soft: rgb(244 239 230 / 0.72);
+  --color-mute: rgb(244 239 230 / 0.48);
+  --color-accent: #e7ff5b;
+  --color-accent-ink: #14120a;
+  --color-warm: #ff7a59;
+  --color-danger: #ff8b8b;
+  --color-focus: #e7ff5b;
+
+  --font-display: 'Fraunces Variable', Fraunces, 'Iowan Old Style', 'Palatino Linotype', serif;
+  --font-sans: 'Outfit Variable', Outfit, system-ui, sans-serif;
+
+  --text-xs: 0.75rem;
+  --text-sm: 0.875rem;
+  --text-md: 1rem;
+  --text-lg: 1.25rem;
+  --text-xl: 1.75rem;
+  --text-2xl: 2.75rem;
+  --text-3xl: clamp(3.25rem, 8vw, 7rem);
+  --text-lyrics: clamp(2rem, 5.6vw, 4.75rem);
+
+  --leading-tight: 0.95;
+  --leading-snug: 1.15;
+  --leading-body: 1.55;
+
+  --space-1: 0.25rem;
+  --space-2: 0.5rem;
+  --space-3: 0.75rem;
+  --space-4: 1rem;
+  --space-5: 1.5rem;
+  --space-6: 2rem;
+  --space-7: 3rem;
+  --space-8: 4.5rem;
+  --space-9: 7rem;
+
+  --radius-sm: 0.25rem;
+  --radius-md: 0.75rem;
+  --radius-lg: 1.5rem;
+  --radius-pill: 999px;
+
+  --shadow-soft: 0 24px 80px rgb(0 0 0 / 0.28);
+  --shadow-focus: 0 0 0 2px var(--color-void), 0 0 0 4px var(--color-focus);
+
+  --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+  --duration-fast: 160ms;
+  --duration-med: 420ms;
+  --duration-slow: 780ms;
+
+  --z-base: 1;
+  --z-nav: 20;
+  --z-sheet: 40;
+  --z-toast: 50;
+
+  --page-pad: clamp(1.25rem, 4vw, 4rem);
+  --page-max: 72rem;
+  --content-max: 40rem;
+
+  --bp-sm: 480px;
+  --bp-md: 768px;
+  --bp-lg: 1100px;
+  --bp-xl: 1440px;
+}

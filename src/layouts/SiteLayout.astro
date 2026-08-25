@@ -1,0 +1,43 @@
+---
+import '../styles/pages.css';
+import BaseLayout from './BaseLayout.astro';
+import { withBase } from '../utils/paths';
+
+type Props = {
+  title: string;
+  description: string;
+  canonicalPath: string;
+  current?: 'home' | 'play' | 'categories' | 'search';
+};
+
+const { title, description, canonicalPath, current } = Astro.props;
+---
+
+<BaseLayout title={title} description={description} canonicalPath={canonicalPath}>
+  <div class="site-shell">
+    <header class="site-header">
+      <a class="wordmark" href={withBase('/')}>Lyric-Guess</a>
+      <nav class="nav" aria-label="Primary">
+        <a href={withBase('/play')} aria-current={current === 'play' ? 'page' : undefined}>Play</a>
+        <a
+          href={withBase('/categories')}
+          aria-current={current === 'categories' ? 'page' : undefined}>Categories</a
+        >
+        <a href={withBase('/search')} aria-current={current === 'search' ? 'page' : undefined}
+          >Search</a
+        >
+      </nav>
+    </header>
+    <main id="content" class="site-main">
+      <slot />
+    </main>
+    <footer class="site-footer">
+      <p>A listening room for lyric fragments.</p>
+      <p>
+        <a href="https://github.com/hstev/lyric-guess" rel="noreferrer noopener">
+          Contribute on GitHub
+        </a>
+      </p>
+    </footer>
+  </div>
+</BaseLayout>

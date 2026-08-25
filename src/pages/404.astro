@@ -1,0 +1,22 @@
+---
+import SiteLayout from '../layouts/SiteLayout.astro';
+import { withBase } from '../utils/paths';
+---
+
+<SiteLayout
+  title="Lost in the mix · Lyric-Guess"
+  description="This page is not in the Lyric-Guess catalog."
+  canonicalPath="/404"
+>
+  <section class="status-panel">
+    <p class="kicker">404</p>
+    <h1 class="display" style="font-size: clamp(3rem, 8vw, 6rem); max-width: 12ch;">
+      This frequency is empty.
+    </h1>
+    <p class="empty-copy">The page you asked for is not in the catalog.</p>
+    <div class="btn-row">
+      <a class="ghost-link" href={withBase('/')}>Return home</a>
+      <a class="ghost-link" href={withBase('/play')}>Start a round</a>
+    </div>
+  </section>
+</SiteLayout>

@@ -1,0 +1,98 @@
+.home-hero {
+  padding-block: clamp(3rem, 12vh, 8rem) var(--space-8);
+  display: grid;
+  gap: var(--space-6);
+}
+
+.home-hero h1 {
+  font-size: var(--text-3xl);
+  max-width: 11ch;
+}
+
+.featured {
+  display: grid;
+  gap: var(--space-5);
+  padding-bottom: var(--space-9);
+}
+
+.featured__head {
+  display: flex;
+  justify-content: space-between;
+  gap: var(--space-4);
+  align-items: end;
+}
+
+.category-index {
+  display: grid;
+  gap: var(--space-2);
+  padding-block: var(--space-6);
+}
+
+.category-index a {
+  font-family: var(--font-display);
+  font-size: clamp(2.5rem, 8vw, 6rem);
+  letter-spacing: -0.06em;
+  line-height: 0.92;
+  text-decoration: none;
+}
+
+.category-index a:hover {
+  color: var(--color-accent);
+}
+
+.page-hero {
+  padding-block: var(--space-7) var(--space-5);
+  display: grid;
+  gap: var(--space-4);
+}
+
+.page-hero h1 {
+  font-size: clamp(3rem, 9vw, 6.5rem);
+  letter-spacing: -0.07em;
+  line-height: 0.9;
+}
+
+.detail-grid {
+  display: grid;
+  gap: var(--space-7);
+  padding-bottom: var(--space-9);
+}
+
+@media (min-width: 960px) {
+  .detail-grid {
+    grid-template-columns: 1.2fr 0.8fr;
+    align-items: start;
+  }
+
+  .home-hero {
+    grid-template-columns: 1.4fr 0.8fr;
+    align-items: end;
+  }
+}
+
+.detail-side {
+  display: grid;
+  gap: var(--space-4);
+  position: sticky;
+  top: 6rem;
+}
+
+.song-detail__title {
+  font-size: clamp(2.75rem, 7vw, 5.5rem);
+  font-weight: 650;
+  margin: var(--space-2) 0 var(--space-7);
+}
+
+.song-detail__lyrics {
+  margin: var(--space-3) 0 0;
+  padding-top: var(--space-5);
+  border-top: 1px solid var(--color-line);
+  font-family: var(--font-display);
+  font-size: clamp(1.15rem, 2vw, 1.55rem);
+  font-weight: 400;
+  line-height: 1.55;
+  letter-spacing: -0.015em;
+  color: var(--color-paper-soft);
+  white-space: pre-line;
+  max-width: 32ch;
+}

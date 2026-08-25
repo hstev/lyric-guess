@@ -1,0 +1,74 @@
+---
+import SiteLayout from '../../layouts/SiteLayout.astro';
+import { getStaticCatalog } from '../../lib/services/static-catalog';
+import { parseYouTubeUrl, buildYouTubeWatchUrl } from '../../lib/player/youtube-url';
+import { withBase } from '../../utils/paths';
+import { formatArtistNames } from '../../utils/text';
+
+export async function getStaticPaths() {
+  const songs = await getStaticCatalog().songs.getSongs();
+  return songs.map((song) => ({
+    params: { slug: song.slug },
+  }));
+}
+
+const { slug } = Astro.params;
+const song = slug ? await getStaticCatalog().songs.getSongBySlug(slug) : null;
+
+if (!song) {
+  throw new Error(`Unknown song: ${slug ?? ''}`);
+}
+
+const parsed = parseYouTubeUrl(song.youtubeUrl);
+const watchUrl = parsed ? buildYouTubeWatchUrl(parsed.videoId, song.youtubeStartSeconds) : null;
+const artistLine = formatArtistNames(song.artists.map((artist) => artist.name));
+---
+
+<SiteLayout
+  title={`${song.title} · Lyric-Guess`}
+  description={`Original demo lyrics for ${song.title} by ${artistLine}.`}
+  canonicalPath={`/songs/${song.slug}`}
+>
+  <article class="detail-grid song-detail">
+    <div>
+      <p class="kicker">Song</p>
+      <h1 class="display song-detail__title">{song.title}</h1>
+      <p class="kicker">Lyrics</p>
+      <p class="song-detail__lyrics">{song.lyrics}</p>
+    </div>
+    <aside class="detail-side">
+      <p class="meta">
+        {
+          song.artists.map((artist, index) => (
+            <>
+              {index > 0 && <span> · </span>}
+              <a href={withBase(`/artists/${artist.slug}`)}>{artist.name}</a>
+            </>
+          ))
+        }
+      </p>
+      <p class="meta">
+        {
+          song.categories.map((category, index) => (
+            <>
+              {index > 0 && <span> · </span>}
+              <a href={withBase(`/categories/${category.slug}`)}>{category.name}</a>
+            </>
+          ))
+        }
+      </p>
+      <div class="btn-row">
+        <a class="ghost-link" href={withBase(`/play?song=${song.slug}`)}>Start a round</a>
+        {
+          watchUrl ? (
+            <a class="ghost-link" href={watchUrl} rel="noreferrer noopener" target="_blank">
+              {song.demoClip ? 'Demo clip on YouTube' : 'Open on YouTube'}
+            </a>
+          ) : (
+            <p class="empty-copy">No YouTube fragment is attached to this demo song.</p>
+          )
+        }
+      </div>
+    </aside>
+  </article>
+</SiteLayout>

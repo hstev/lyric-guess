@@ -1,0 +1,39 @@
+---
+import type { Song } from '../types/catalog';
+import { withBase } from '../utils/paths';
+import { formatArtistNames } from '../utils/text';
+
+type Props = {
+  songs: Song[];
+};
+
+const { songs } = Astro.props;
+---
+
+{
+  songs.length === 0 ? (
+    <section class="status-panel">
+      <p class="kicker">Empty collection</p>
+      <h2 class="display" style="font-size: clamp(2rem, 5vw, 3.5rem); max-width: 12ch;">
+        Nothing in this room yet.
+      </h2>
+      <p class="empty-copy">Try another category, or start a round from the full catalog.</p>
+      <a class="ghost-link" href={withBase('/play')}>
+        Play anyway
+      </a>
+    </section>
+  ) : (
+    <ul class="song-list">
+      {songs.map((song) => (
+        <li>
+          <a href={withBase(`/songs/${song.slug}`)}>
+            <span class="song-list__title">{song.title}</span>
+            <span class="song-list__meta">
+              {formatArtistNames(song.artists.map((artist) => artist.name))}
+            </span>
+          </a>
+        </li>
+      ))}
+    </ul>
+  )
+}

@@ -1,0 +1,25 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="Lyric-Guess">
+  <rect width="64" height="64" rx="14" fill="#07060b"/>
+  <path
+    d="M22 11v29.5"
+    fill="none"
+    stroke="#f4efe6"
+    stroke-width="7"
+    stroke-linecap="round"
+  />
+  <path
+    d="M25 11c11 2.5 16 9 15.5 18"
+    fill="none"
+    stroke="#e7ff5b"
+    stroke-width="3.2"
+    stroke-linecap="round"
+  />
+  <ellipse
+    cx="36"
+    cy="46.5"
+    rx="16"
+    ry="10.5"
+    transform="rotate(-28 36 46.5)"
+    fill="#e7ff5b"
+  />
+</svg>

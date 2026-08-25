@@ -1,0 +1,33 @@
+---
+import SiteLayout from '../../layouts/SiteLayout.astro';
+import SongList from '../../components/SongList.astro';
+import { getStaticCatalog } from '../../lib/services/static-catalog';
+
+export async function getStaticPaths() {
+  const artists = await getStaticCatalog().artists.getArtists();
+  return artists.map((artist) => ({
+    params: { slug: artist.slug },
+  }));
+}
+
+const { slug } = Astro.params;
+const catalog = getStaticCatalog();
+const artist = slug ? await catalog.artists.getArtistBySlug(slug) : null;
+const songs = slug ? await catalog.songs.getSongsByArtistSlug(slug) : [];
+
+if (!artist) {
+  throw new Error(`Unknown artist: ${slug ?? ''}`);
+}
+---
+
+<SiteLayout
+  title={`${artist.name} · Lyric-Guess`}
+  description={`Demo songs attributed to ${artist.name}.`}
+  canonicalPath={`/artists/${artist.slug}`}
+>
+  <section class="page-hero">
+    <p class="kicker">Artist</p>
+    <h1 class="display">{artist.name}</h1>
+  </section>
+  <SongList songs={songs} />
+</SiteLayout>
