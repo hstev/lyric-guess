@@ -1,6 +1,6 @@
 import type { Artist, Category, Song } from '../types/catalog';
 
-export const SEED_VERSION = '1';
+export const SEED_VERSION = '20261003-01';
 
 const createdAt = '2026-01-12T10:00:00.000Z';
 const updatedAt = createdAt;
@@ -10,6 +10,7 @@ export const seedArtists: Artist[] = [
   { id: 'artist_selene', name: 'Selene', slug: 'selene' },
   { id: 'artist_mañas_rufino', name: 'Mañas Ru-fino', slug: 'mañas-ru-fino' },
   { id: 'artist_luis_7_lunes', name: 'Luis7Lunes', slug: 'luis-7-lunes' },
+  { id: 'radio_mc', name: 'Radio MC', slug: 'radio-mc' },
 ];
 
 export const seedCategories: Category[] = [{ id: 'cat_rap', name: 'Rap', slug: 'rap' }];
@@ -88,8 +89,8 @@ const seedSongInputs: SeedSongInput[] = [
     categoryIds: ['cat_rap'],
   },
   {
-    id: '56823d00-dd77-4c09-a3aa-e2c1df53a352',
-    slug: '56823d00-dd77-4c09-a3aa-e2c1df53a352',
+    id: '113672bf-281c-4bea-8a98-8014e0733c51',
+    slug: '113672bf-281c-4bea-8a98-8014e0733c51',
     title: 'Agua y ensalada',
     lyrics: 'Enbolatados van a señalarte el norte\nSé que me corresponde una parte.\nno tocar cual arte, que yo me muevo escribiendo aparte\nMejor si no encajan tu marco y corte',
     youtubeUrl: 'https://youtu.be/FoE0xCUnSWA',
@@ -98,6 +99,19 @@ const seedSongInputs: SeedSongInput[] = [
     durationSeconds: 12,
     demoClip: true,
     artistIds: ['artist_luis_7_lunes'],
+    categoryIds: ['cat_rap'],
+  },
+  {
+    id: '113672bf-281c-4bea-8a98-8014e0733c51',
+    slug: '113672bf-281c-4bea-8a98-8014e0733c51',
+    title: 'El barrio no es un negocio',
+    lyrics: 'Y asi contribuir a mi comuna con salud y educación\nmás camadas de niños bro escuchando Hip Hop',
+    youtubeUrl: 'https://youtu.be/eIE07fGNz-0',
+    youtubeStartSeconds: 53,
+    youtubeEndSeconds: 59,
+    durationSeconds: 6,
+    demoClip: true,
+    artistIds: ['radio_mc'],
     categoryIds: ['cat_rap'],
   },
 ];

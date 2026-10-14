@@ -1,6 +1,7 @@
 import sitemap from '@astrojs/sitemap';
 import { defineConfig } from 'astro/config';
 import type { Plugin } from 'vite';
+import { prepareSqlWasmBrowser } from './src/lib/database/prepare-sql-wasm';
 
 const site = process.env.PUBLIC_SITE_URL ?? 'https://hstev.github.io';
 const base = process.env.PUBLIC_BASE_PATH ?? '/lyric-guess/';
@@ -14,16 +15,8 @@ function sqlJsDefaultExport(): Plugin {
       if (!file.endsWith('sql-wasm-browser.js')) {
         return null;
       }
-      if (code.includes('export default initSqlJs')) {
-        return null;
-      }
 
-      const withoutCjsFooter = code.replace(
-        /\nif \(typeof exports === 'object' && typeof module === 'object'\)\{[\s\S]*$/,
-        '',
-      );
-
-      return `${withoutCjsFooter}\nexport default initSqlJs;\n`;
+      return prepareSqlWasmBrowser(code);
     },
   };
 }
