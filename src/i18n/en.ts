@@ -94,7 +94,7 @@ export const en: NestedString<typeof es> = {
     timer: 'Timer',
     roundLength: 'Round length',
     close: 'Close',
-    demoNote: 'Demo clip from a public-domain open movie, used to test fragment playback.',
+    demoNote: 'Lyric fragment',
     youtubeNote: 'Official YouTube embed for this lyric fragment.',
     youtubeUnavailable: 'YouTube is not available for this song.',
     playerFailed: 'The player could not start. You can open YouTube instead.',

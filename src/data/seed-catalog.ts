@@ -1,6 +1,6 @@
 import type { Artist, Category, Song } from '../types/catalog';
 
-export const SEED_VERSION = '20261003-01';
+export const SEED_VERSION = '20261013-01';
 
 const createdAt = '2026-01-12T10:00:00.000Z';
 const updatedAt = createdAt;
@@ -10,7 +10,9 @@ export const seedArtists: Artist[] = [
   { id: 'artist_selene', name: 'Selene', slug: 'selene' },
   { id: 'artist_mañas_rufino', name: 'Mañas Ru-fino', slug: 'mañas-ru-fino' },
   { id: 'artist_luis_7_lunes', name: 'Luis7Lunes', slug: 'luis-7-lunes' },
-  { id: 'radio_mc', name: 'Radio MC', slug: 'radio-mc' },
+  { id: 'artist_radio_mc', name: 'Radio MC', slug: 'radio-mc' },
+  { id: 'artist_asir_ones', name: 'Asir Ones', slug: 'asir-ones' },
+  { id: 'artist_noisiferatu', name: 'Noisiferatu', slug: 'noisiferatu' },
 ];
 
 export const seedCategories: Category[] = [{ id: 'cat_rap', name: 'Rap', slug: 'rap' }];
@@ -102,8 +104,8 @@ const seedSongInputs: SeedSongInput[] = [
     categoryIds: ['cat_rap'],
   },
   {
-    id: '113672bf-281c-4bea-8a98-8014e0733c51',
-    slug: '113672bf-281c-4bea-8a98-8014e0733c51',
+    id: 'bebf80bf-763e-4eef-8dc5-dcc1771a5776',
+    slug: 'bebf80bf-763e-4eef-8dc5-dcc1771a5776',
     title: 'El barrio no es un negocio',
     lyrics: 'Y asi contribuir a mi comuna con salud y educación\nmás camadas de niños bro escuchando Hip Hop',
     youtubeUrl: 'https://youtu.be/eIE07fGNz-0',
@@ -111,7 +113,46 @@ const seedSongInputs: SeedSongInput[] = [
     youtubeEndSeconds: 59,
     durationSeconds: 6,
     demoClip: true,
-    artistIds: ['radio_mc'],
+    artistIds: ['artist_radio_mc'],
+    categoryIds: ['cat_rap'],
+  },
+  {
+    id: '62993d1c-a452-470e-b94e-f9d0b25f7cd7',
+    slug: '62993d1c-a452-470e-b94e-f9d0b25f7cd7',
+    title: 'Ironías',
+    lyrics: 'A la final todos deben comer\nNo me preguntes por la falta de modales\nNo vas a hablarle de conciencia a niños que crecieron en la calle.',
+    youtubeUrl: 'https://youtu.be/tYnGoxtVR3s',
+    youtubeStartSeconds: 52,
+    youtubeEndSeconds: 59,
+    durationSeconds: 6,
+    demoClip: true,
+    artistIds: ['artist_asir_ones'],
+    categoryIds: ['cat_rap'],
+  },
+  {
+    id: '7c846c03-5eb4-477f-a154-f4152d6dff64',
+    slug: '7c846c03-5eb4-477f-a154-f4152d6dff64',
+    title: 'PARA SIEMPRE',
+    lyrics: 'Todo lo que pasamos no es por nada\n¿Aporreones en la rodilla? si, no palmadas en la espalda.',
+    youtubeUrl: 'https://youtu.be/iIJsRA6YGso',
+    youtubeStartSeconds: 71,
+    youtubeEndSeconds: 77,
+    durationSeconds: 6,
+    demoClip: true,
+    artistIds: ['artist_asir_ones'],
+    categoryIds: ['cat_rap'],
+  },
+  {
+    id: 'bc883bb8-24d6-4aa6-9197-6f091912a727',
+    slug: 'bc883bb8-24d6-4aa6-9197-6f091912a727',
+    title: 'Entroía',
+    lyrics: 'Medito bajo el lapo, no espero que cese\nIndustria indolente carece de lo que padece\nRapean sobre sus trapos\nFake G\'s aprendieron de capos\nDirigidos por Scorsese. ',
+    youtubeUrl: 'https://youtu.be/At_2xS6V9aI',
+    youtubeStartSeconds: 53,
+    youtubeEndSeconds: 64,
+    durationSeconds: 11,
+    demoClip: true,
+    artistIds: ['artist_noisiferatu'],
     categoryIds: ['cat_rap'],
   },
 ];

@@ -89,8 +89,7 @@ export const es = {
     timer: 'Temporizador',
     roundLength: 'Duración de la ronda',
     close: 'Cerrar',
-    demoNote:
-      'Clip de demo de una película libre de derechos, para probar la reproducción del fragmento.',
+    demoNote: 'Fragmento de la frase',
     youtubeNote: 'Reproductor oficial de YouTube para este fragmento de letra.',
     youtubeUnavailable: 'YouTube no está disponible para esta canción.',
     playerFailed: 'El reproductor no pudo arrancar. Puedes abrir YouTube en su lugar.',
