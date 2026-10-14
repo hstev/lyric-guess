@@ -1,6 +1,6 @@
 import type { Artist, Category, Song } from '../types/catalog';
 
-export const SEED_VERSION = '20261013-01';
+export const SEED_VERSION = '20261013-04';
 
 const createdAt = '2026-01-12T10:00:00.000Z';
 const updatedAt = createdAt;
@@ -12,7 +12,7 @@ export const seedArtists: Artist[] = [
   { id: 'artist_luis_7_lunes', name: 'Luis7Lunes', slug: 'luis-7-lunes' },
   { id: 'artist_radio_mc', name: 'Radio MC', slug: 'radio-mc' },
   { id: 'artist_asir_ones', name: 'Asir Ones', slug: 'asir-ones' },
-  { id: 'artist_noisiferatu', name: 'Noisiferatu', slug: 'noisiferatu' },
+  { id: 'artist_noiseferatu', name: 'Noiseferatu', slug: 'noiseferatu' },
 ];
 
 export const seedCategories: Category[] = [{ id: 'cat_rap', name: 'Rap', slug: 'rap' }];
@@ -145,14 +145,27 @@ const seedSongInputs: SeedSongInput[] = [
   {
     id: 'bc883bb8-24d6-4aa6-9197-6f091912a727',
     slug: 'bc883bb8-24d6-4aa6-9197-6f091912a727',
-    title: 'Entroía',
+    title: 'Entropía',
     lyrics: 'Medito bajo el lapo, no espero que cese\nIndustria indolente carece de lo que padece\nRapean sobre sus trapos\nFake G\'s aprendieron de capos\nDirigidos por Scorsese. ',
     youtubeUrl: 'https://youtu.be/At_2xS6V9aI',
     youtubeStartSeconds: 53,
     youtubeEndSeconds: 64,
     durationSeconds: 11,
     demoClip: true,
-    artistIds: ['artist_noisiferatu'],
+    artistIds: ['artist_noiseferatu'],
+    categoryIds: ['cat_rap'],
+  },
+  {
+    id: 'f7ac49f3-1ab6-42db-bbbb-5f14f34bf137',
+    slug: 'f7ac49f3-1ab6-42db-bbbb-5f14f34bf137',
+    title: 'Entropía',
+    lyrics: 'Artistas no hacen arte\nUribestias de clóset\nParecen Polo Polo o Samuel Jackson en Django\nEngañados, se hacen matar por la causa de su amo',
+    youtubeUrl: 'https://youtu.be/At_2xS6V9aI',
+    youtubeStartSeconds: 53,
+    youtubeEndSeconds: 64,
+    durationSeconds: 11,
+    demoClip: true,
+    artistIds: ['artist_noiseferatu'],
     categoryIds: ['cat_rap'],
   },
 ];
