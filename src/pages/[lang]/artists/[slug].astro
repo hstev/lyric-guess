@@ -1,0 +1,45 @@
+---
+import SiteLayout from '../../../layouts/SiteLayout.astro';
+import SongList from '../../../components/SongList.astro';
+import { musicGroupJsonLd } from '../../../lib/seo/json-ld';
+import { getStaticCatalog } from '../../../lib/services/static-catalog';
+import { localeSlugParams, requireLocale, useTranslations } from '../../../i18n';
+import { artistPageDescription, artistPageTitle } from '../../../utils/seo';
+
+export async function getStaticPaths() {
+  const artists = await getStaticCatalog().artists.getArtists();
+  return localeSlugParams(artists.map((artist) => artist.slug));
+}
+
+const lang = requireLocale(Astro.params.lang);
+const t = useTranslations(lang);
+const { slug } = Astro.params;
+const catalog = getStaticCatalog();
+const artist = slug ? await catalog.artists.getArtistBySlug(slug) : null;
+const songs = slug ? await catalog.songs.getSongsByArtistSlug(slug) : [];
+
+if (!artist) {
+  throw new Error(`Unknown artist: ${slug ?? ''}`);
+}
+---
+
+<SiteLayout
+  locale={lang}
+  title={artistPageTitle(artist, lang)}
+  description={artistPageDescription(artist, songs, lang)}
+  path={`/artists/${artist.slug}`}
+  ogType="profile"
+  jsonLd={musicGroupJsonLd(
+    artist.name,
+    artist.slug,
+    songs.map((song) => song.title),
+    lang,
+    Astro.site,
+  )}
+>
+  <section class="page-hero">
+    <p class="kicker">{t('artist.kicker')}</p>
+    <h1 class="display">{artist.name}</h1>
+  </section>
+  <SongList locale={lang} songs={songs} />
+</SiteLayout>

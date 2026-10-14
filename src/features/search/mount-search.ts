@@ -1,14 +1,18 @@
-import { withBase } from '../../utils/paths';
+import type { Locale } from '../../i18n';
+import { persistLocale, useTranslations } from '../../i18n';
+import { withLocale } from '../../utils/paths';
 import { formatArtistNames } from '../../utils/text';
 
-export async function mountSearch(root: HTMLElement): Promise<void> {
+export async function mountSearch(root: HTMLElement, locale: Locale): Promise<void> {
+  const t = useTranslations(locale);
   const params = new URLSearchParams(window.location.search);
   const initial = params.get('q') ?? '';
+  persistLocale(locale);
 
   root.innerHTML = `
-    <label class="kicker" for="song-search">Search</label>
-    <input id="song-search" class="search-box" type="search" placeholder="Title, artist, category" value="" autocomplete="off" />
-    <p class="meta" data-ref="status">Opening catalog…</p>
+    <label class="kicker" for="song-search">${t('search.label')}</label>
+    <input id="song-search" class="search-box" type="search" placeholder="${t('search.placeholder')}" value="" autocomplete="off" />
+    <p class="meta" data-ref="status">${t('search.opening')}</p>
     <ul class="song-list" data-ref="results"></ul>
   `;
 
@@ -42,22 +46,24 @@ export async function mountSearch(root: HTMLElement): Promise<void> {
 
       if (!query) {
         results.replaceChildren();
-        status.textContent = 'Start typing. Search runs in SQLite.';
+        status.textContent = t('search.hint');
         return;
       }
 
       const songs = await catalog.songs.searchSongs(query);
       results.replaceChildren();
       if (songs.length === 0) {
-        status.textContent = `No matches for “${query}”.`;
+        status.textContent = t('search.noMatches', { query });
         return;
       }
 
-      status.textContent = `${songs.length} ${songs.length === 1 ? 'song' : 'songs'}`;
+      status.textContent = t(songs.length === 1 ? 'search.songCount' : 'search.songCountPlural', {
+        count: songs.length,
+      });
       for (const song of songs) {
         const item = document.createElement('li');
         const link = document.createElement('a');
-        link.href = withBase(`/songs/${song.slug}`);
+        link.href = withLocale(locale, `/songs/${song.slug}`);
         const title = document.createElement('span');
         title.className = 'song-list__title';
         title.textContent = song.title;
@@ -82,6 +88,6 @@ export async function mountSearch(root: HTMLElement): Promise<void> {
     await run();
     input.focus();
   } catch {
-    status.textContent = 'The catalog could not be opened, so search is unavailable right now.';
+    status.textContent = t('search.unavailable');
   }
 }

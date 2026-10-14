@@ -1,5 +1,7 @@
 import type { GameSnapshot } from '../../types/game';
 import type { Song } from '../../types/catalog';
+import type { Locale } from '../../i18n';
+import { locales, persistLocale, useTranslations } from '../../i18n';
 import { YouTubePlayer, YouTubeUnavailableError } from '../../lib/player/youtube-player';
 import { buildYouTubeWatchUrl, parseYouTubeUrl } from '../../lib/player/youtube-url';
 import {
@@ -9,21 +11,24 @@ import {
   writePreferences,
 } from '../../lib/services/preferences';
 import { padTwo } from '../../utils/format';
-import { withBase } from '../../utils/paths';
+import { withLocale } from '../../utils/paths';
+import { lyricLanguage } from '../../utils/seo';
 import { formatArtistNames } from '../../utils/text';
 import { atmosphereFromSeed, atmosphereStyle } from './atmosphere';
 import { GameEngine } from './game-engine';
 import { iconClose, iconPlay } from './icons';
 
-export async function mountGame(root: HTMLElement): Promise<void> {
+export async function mountGame(root: HTMLElement, locale: Locale): Promise<void> {
+  const t = useTranslations(locale);
   const params = new URLSearchParams(window.location.search);
   const categorySlug = params.get('category') ?? undefined;
   const songSlug = params.get('song') ?? undefined;
   const preferences = readPreferences();
 
-  root.innerHTML = shellHtml();
+  root.innerHTML = shellHtml(locale, t);
   const refs = bind(root);
   applyAtmosphere(refs.atmosphere, 'lyric-guess');
+  persistLocale(locale);
 
   const { getBrowserCatalog } = await import('../../lib/repositories/create-catalog');
   let engine: GameEngine | null = null;
@@ -45,6 +50,15 @@ export async function mountGame(root: HTMLElement): Promise<void> {
     }
     writePreferences({ timerSeconds: next });
     void restart();
+  });
+
+  root.querySelectorAll('.lang-switch a[data-locale]').forEach((node) => {
+    node.addEventListener('click', () => {
+      const next = node.getAttribute('data-locale');
+      if (next === 'es' || next === 'en') {
+        persistLocale(next);
+      }
+    });
   });
 
   document.addEventListener('keydown', onKey);
@@ -77,7 +91,7 @@ export async function mountGame(root: HTMLElement): Promise<void> {
         song: null,
         remainingMs: 0,
         durationMs: prefs.timerSeconds * 1000,
-        errorMessage: 'The catalog could not be opened. Try refreshing the page.',
+        errorMessage: t('play.catalogError'),
         playedCount: 0,
       });
     }
@@ -86,11 +100,10 @@ export async function mountGame(root: HTMLElement): Promise<void> {
   function render(snapshot: GameSnapshot): void {
     const seconds = Math.ceil(snapshot.remainingMs / 1000);
     refs.timerValue.textContent = padTwo(seconds);
-    refs.timerWrap.setAttribute('aria-label', `${seconds} seconds remaining`);
+    refs.timerWrap.setAttribute('aria-label', t('play.remaining', { seconds }));
     root.classList.toggle('is-revealed', snapshot.phase === 'revealed');
 
-    const sameRound =
-      snapshot.phase === renderedPhase && snapshot.song?.id === renderedSongId;
+    const sameRound = snapshot.phase === renderedPhase && snapshot.song?.id === renderedSongId;
     if (sameRound) {
       return;
     }
@@ -103,25 +116,25 @@ export async function mountGame(root: HTMLElement): Promise<void> {
     }
 
     if (snapshot.phase === 'loading') {
-      setStatus('Loading song…');
+      setStatus(t('play.loading'));
       setActions('guessing', null);
       return;
     }
 
     if (snapshot.phase === 'error') {
-      setStatus(snapshot.errorMessage ?? 'Something went wrong.');
+      setStatus(snapshot.errorMessage ?? t('play.genericError'));
       setActions('error', null);
       return;
     }
 
     if (snapshot.phase === 'empty') {
-      setStatus('No songs in this collection yet.');
+      setStatus(t('play.empty'));
       setActions('empty', null);
       return;
     }
 
     if (!snapshot.song) {
-      setStatus('Loading song…');
+      setStatus(t('play.loading'));
       return;
     }
 
@@ -139,6 +152,7 @@ export async function mountGame(root: HTMLElement): Promise<void> {
     hideReveal();
     hidePlayer();
     refs.lyrics.textContent = '';
+    refs.lyrics.removeAttribute('lang');
     refs.status.hidden = false;
     refs.status.textContent = message;
   }
@@ -147,13 +161,14 @@ export async function mountGame(root: HTMLElement): Promise<void> {
     hideReveal();
     hidePlayer();
     refs.status.hidden = true;
+    refs.lyrics.lang = lyricLanguage(lyrics);
     refs.lyrics.textContent = lyrics;
     replayLyricsEntrance();
   }
 
   function setReveal(song: Song): void {
     refs.reveal.hidden = false;
-    refs.revealKicker.textContent = 'Answer';
+    refs.revealKicker.textContent = t('play.answer');
     refs.revealTitle.textContent = song.title;
     refs.revealArtist.textContent = formatArtistNames(song.artists.map((artist) => artist.name));
     refs.revealCategory.textContent = song.categories.map((category) => category.name).join(' · ');
@@ -182,34 +197,32 @@ export async function mountGame(root: HTMLElement): Promise<void> {
     refs.actions.replaceChildren();
 
     if (mode === 'guessing') {
-      refs.actions.append(actionButton('Reveal answer', () => engine?.reveal(), 'reveal'));
+      refs.actions.append(actionButton(t('play.reveal'), () => engine?.reveal(), 'reveal'));
       return;
     }
 
     if (mode === 'revealed' && song) {
       refs.actions.append(
-        actionButton('Play fragment', () => void playSong(song), 'play', true),
-        actionButton('Next song', () => void engine?.next(), 'next'),
+        actionButton(t('play.playFragment'), () => void playSong(song), 'play', true),
+        actionButton(t('play.next'), () => void engine?.next(), 'next'),
       );
       return;
     }
 
-    refs.actions.append(linkButton('Browse catalog', withBase('/categories')));
+    refs.actions.append(linkButton(t('play.browse'), withLocale(locale, '/categories')));
   }
 
   async function playSong(song: Song): Promise<void> {
     try {
       refs.sheet.hidden = false;
-      refs.playerNote.textContent = song.demoClip
-        ? 'Demo clip from a public-domain open movie, used to test fragment playback.'
-        : 'Official YouTube embed for this lyric fragment.';
+      refs.playerNote.textContent = song.demoClip ? t('play.demoNote') : t('play.youtubeNote');
       await player.play(song);
     } catch (error) {
       refs.playerMount.replaceChildren();
       const message =
         error instanceof YouTubeUnavailableError
-          ? 'YouTube is not available for this song.'
-          : 'The player could not start. You can open YouTube instead.';
+          ? t('play.youtubeUnavailable')
+          : t('play.playerFailed');
       const note = document.createElement('p');
       note.textContent = message;
       refs.playerMount.append(note);
@@ -221,7 +234,7 @@ export async function mountGame(root: HTMLElement): Promise<void> {
         link.rel = 'noreferrer noopener';
         link.target = '_blank';
         link.className = 'ghost-link';
-        link.textContent = 'Open on YouTube';
+        link.textContent = t('play.openYoutube');
         refs.playerMount.append(link);
       }
       refs.sheet.hidden = false;
@@ -280,10 +293,17 @@ function linkButton(label: string, href: string): HTMLAnchorElement {
   return link;
 }
 
-function shellHtml(): string {
-  const home = withBase('/');
+function shellHtml(locale: Locale, t: ReturnType<typeof useTranslations>): string {
+  const home = withLocale(locale, '/');
+  const search = window.location.search;
   const options = getAllowedTimerSeconds()
     .map((value) => `<option value="${value}">${value}s</option>`)
+    .join('');
+  const langLinks = locales
+    .map((code) => {
+      const current = code === locale ? ' aria-current="true"' : '';
+      return `<a href="${withLocale(code, '/play')}${search}" hreflang="${code}" lang="${code}" data-locale="${code}"${current}>${code.toUpperCase()}</a>`;
+    })
     .join('');
 
   return `
@@ -294,19 +314,21 @@ function shellHtml(): string {
       <div class="atmosphere__noise"></div>
       <div class="atmosphere__scrim"></div>
     </div>
-    <a class="skip-link" href="#game-main">Skip to lyrics</a>
     <header class="game-bar">
-      <a class="wordmark" href="${home}">Lyric-Guess</a>
+      <div class="game-bar__brand">
+        <a class="wordmark" href="${home}">Lyric-Guess</a>
+        <nav class="lang-switch" aria-label="${t('nav.language')}">${langLinks}</nav>
+      </div>
       <div class="timer" data-ref="timer" aria-live="polite">
-        <span class="timer__label">seconds</span>
+        <span class="timer__label">${t('play.seconds')}</span>
         <span class="timer__value" data-ref="timer-value">15</span>
       </div>
     </header>
     <main id="game-main" class="game-stage">
-      <p class="status-copy" data-ref="status">Loading song…</p>
+      <p class="status-copy" data-ref="status">${t('play.loading')}</p>
       <p class="lyrics" data-ref="lyrics"></p>
       <section class="reveal" data-ref="reveal" hidden>
-        <p class="reveal__kicker" data-ref="reveal-kicker">Answer</p>
+        <p class="reveal__kicker" data-ref="reveal-kicker">${t('play.answer')}</p>
         <h1 class="reveal__title" data-ref="reveal-title"></h1>
         <p class="meta" data-ref="reveal-artist"></p>
         <p class="meta" data-ref="reveal-category"></p>
@@ -314,14 +336,14 @@ function shellHtml(): string {
     </main>
     <footer class="game-actions">
       <div data-ref="actions" class="btn-row"></div>
-      <label class="timer-select">Timer
-        <select data-ref="timer-select" aria-label="Round length">${options}</select>
+      <label class="timer-select">${t('play.timer')}
+        <select data-ref="timer-select" aria-label="${t('play.roundLength')}">${options}</select>
       </label>
     </footer>
     <div class="player-sheet" data-ref="sheet" hidden>
       <div class="btn-row">
         <p data-ref="player-note" class="meta"></p>
-        <button type="button" class="text-btn" data-ref="close-player">${iconClose()}<span>Close</span></button>
+        <button type="button" class="text-btn" data-ref="close-player">${iconClose()}<span>${t('play.close')}</span></button>
       </div>
       <div data-ref="player-mount"></div>
     </div>

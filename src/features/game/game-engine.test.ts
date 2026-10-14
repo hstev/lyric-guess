@@ -38,7 +38,11 @@ describe('GameEngine', () => {
     engine.reveal();
     await engine.next();
     expect(engine.getSnapshot().phase).toBe('guessing');
-    expect(engine.getSnapshot().song?.id).not.toBe(firstId);
+    if (seedSongs.length > 1) {
+      expect(engine.getSnapshot().song?.id).not.toBe(firstId);
+    } else {
+      expect(engine.getSnapshot().song?.id).toBe(firstId);
+    }
     engine.dispose();
   });
 

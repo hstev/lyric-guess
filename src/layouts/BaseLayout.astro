@@ -1,39 +1,108 @@
 ---
 import '../styles/global.css';
-import { withBase } from '../utils/paths';
+import JsonLd from '../components/JsonLd.astro';
+import {
+  defaultLocale,
+  htmlLang as toHtmlLang,
+  locales,
+  ogLocale as toOgLocale,
+  ogLocaleAlternate,
+  type Locale,
+  useTranslations,
+} from '../i18n';
+import { alternateLocalePath, withBase } from '../utils/paths';
+
+type JsonLdValue = Record<string, unknown> | Record<string, unknown>[];
 
 type Props = {
+  locale: Locale;
   title: string;
   description: string;
   canonicalPath: string;
+  ogType?: 'website' | 'music.song' | 'profile' | undefined;
+  jsonLd?: JsonLdValue | undefined;
+  robots?: string | undefined;
+  author?: string | undefined;
+  skipHref?: string | undefined;
+  skipLabel?: string | undefined;
 };
 
-const { title, description, canonicalPath } = Astro.props;
+const {
+  locale,
+  title,
+  description,
+  canonicalPath,
+  ogType = 'website',
+  jsonLd,
+  robots,
+  author,
+  skipHref = '#content',
+  skipLabel,
+} = Astro.props;
+const t = useTranslations(locale);
+const skipText = skipLabel ?? t('skip.content');
 const canonical = new URL(withBase(canonicalPath), Astro.site ?? Astro.url).toString();
 const siteName = 'Lyric-Guess';
+const htmlLang = toHtmlLang(locale);
+const ogLocale = toOgLocale(locale);
 ---
 
 <!doctype html>
-<html lang="en">
+<html lang={htmlLang}>
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>{title}</title>
     <meta name="description" content={description} />
+    {author && <meta name="author" content={author} />}
+    {robots && <meta name="robots" content={robots} />}
     <link rel="canonical" href={canonical} />
-    <meta property="og:type" content="website" />
+    {
+      locales.map((code) => (
+        <link
+          rel="alternate"
+          hreflang={code}
+          href={new URL(
+            withBase(alternateLocalePath(canonicalPath, code)),
+            Astro.site ?? Astro.url,
+          ).toString()}
+        />
+      ))
+    }
+    <link
+      rel="alternate"
+      hreflang="x-default"
+      href={new URL(
+        withBase(alternateLocalePath(canonicalPath, defaultLocale)),
+        Astro.site ?? Astro.url,
+      ).toString()}
+    />
+    <meta property="og:type" content={ogType} />
     <meta property="og:site_name" content={siteName} />
+    <meta property="og:locale" content={ogLocale} />
+    <meta property="og:locale:alternate" content={ogLocaleAlternate(locale)} />
     <meta property="og:title" content={title} />
     <meta property="og:description" content={description} />
     <meta property="og:url" content={canonical} />
-    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:card" content="summary" />
     <meta name="twitter:title" content={title} />
     <meta name="twitter:description" content={description} />
     <link rel="icon" href={withBase('/favicon.svg')} type="image/svg+xml" />
     <meta name="theme-color" content="#07060b" />
+    {jsonLd && <JsonLd data={jsonLd} />}
   </head>
   <body>
-    <a class="skip-link" href="#content">Skip to content</a>
+    <a class="skip-link" href={skipHref} data-i18n={skipLabel ? 'skip.lyrics' : 'skip.content'}
+      >{skipText}</a
+    >
     <slot />
+    <script>
+      import { isLocale, persistLocale } from '../i18n';
+
+      const lang = document.documentElement.lang;
+      if (isLocale(lang)) {
+        persistLocale(lang);
+      }
+    </script>
   </body>
 </html>

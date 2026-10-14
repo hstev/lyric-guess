@@ -1,0 +1,41 @@
+---
+import { locales, switchLocalePath, useTranslations, type Locale } from '../i18n';
+import { withLocale } from '../utils/paths';
+
+type Props = {
+  locale: Locale;
+  path?: string | undefined;
+};
+
+const { locale, path } = Astro.props;
+const t = useTranslations(locale);
+---
+
+<nav class="lang-switch" aria-label={t('nav.language')} data-i18n-aria="nav.language">
+  {
+    locales.map((code) => (
+      <a
+        href={path === undefined ? switchLocalePath(Astro.url, code) : withLocale(code, path)}
+        hreflang={code}
+        lang={code}
+        aria-current={code === locale ? 'true' : undefined}
+        data-locale={code}
+      >
+        {code.toUpperCase()}
+      </a>
+    ))
+  }
+</nav>
+
+<script>
+  import { isLocale, persistLocale } from '../i18n';
+
+  document.querySelectorAll('.lang-switch a[data-locale]').forEach((node) => {
+    node.addEventListener('click', () => {
+      const next = node.getAttribute('data-locale');
+      if (next && isLocale(next)) {
+        persistLocale(next);
+      }
+    });
+  });
+</script>

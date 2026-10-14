@@ -1,22 +1,68 @@
 ---
 import SiteLayout from '../layouts/SiteLayout.astro';
-import { withBase } from '../utils/paths';
+import { defaultLocale, useTranslations } from '../i18n';
+import { withLocale } from '../utils/paths';
+
+const locale = defaultLocale;
+const t = useTranslations(locale);
 ---
 
 <SiteLayout
-  title="Lost in the mix · Lyric-Guess"
-  description="This page is not in the Lyric-Guess catalog."
-  canonicalPath="/404"
+  locale={locale}
+  title={t('notFound.title')}
+  description={t('notFound.description')}
+  path="/404"
+  languageSwitchPath="/"
 >
-  <section class="status-panel">
+  <section class="status-panel" data-not-found>
     <p class="kicker">404</p>
-    <h1 class="display" style="font-size: clamp(3rem, 8vw, 6rem); max-width: 12ch;">
-      This frequency is empty.
+    <h1
+      class="display"
+      style="font-size: clamp(3rem, 8vw, 6rem); max-width: 12ch;"
+      data-i18n="notFound.heading"
+    >
+      {t('notFound.heading')}
     </h1>
-    <p class="empty-copy">The page you asked for is not in the catalog.</p>
+    <p class="empty-copy" data-i18n="notFound.copy">{t('notFound.copy')}</p>
     <div class="btn-row">
-      <a class="ghost-link" href={withBase('/')}>Return home</a>
-      <a class="ghost-link" href={withBase('/play')}>Start a round</a>
+      <a
+        class="ghost-link"
+        href={withLocale(locale, '/')}
+        data-i18n="notFound.home"
+        data-locale-path="/"
+      >
+        {t('notFound.home')}
+      </a>
+      <a
+        class="ghost-link"
+        href={withLocale(locale, '/play')}
+        data-i18n="notFound.play"
+        data-locale-path="/play"
+      >
+        {t('notFound.play')}
+      </a>
     </div>
   </section>
 </SiteLayout>
+
+<script>
+  import { getLangFromUrl, hydrateI18n, persistLocale, useTranslations } from '../i18n';
+
+  const locale = getLangFromUrl(new URL(window.location.href));
+  persistLocale(locale);
+  hydrateI18n(document, locale);
+
+  const t = useTranslations(locale);
+  document.title = t('notFound.title');
+  const description = document.querySelector('meta[name="description"]');
+  description?.setAttribute('content', t('notFound.description'));
+
+  document.querySelectorAll('.lang-switch a[data-locale]').forEach((node) => {
+    const code = node.getAttribute('data-locale');
+    if (code === locale) {
+      node.setAttribute('aria-current', 'true');
+    } else {
+      node.removeAttribute('aria-current');
+    }
+  });
+</script>

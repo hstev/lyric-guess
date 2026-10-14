@@ -1,0 +1,86 @@
+---
+import SiteLayout from '../../../layouts/SiteLayout.astro';
+import { songPageJsonLd } from '../../../lib/seo/json-ld';
+import { getStaticCatalog } from '../../../lib/services/static-catalog';
+import { parseYouTubeUrl, buildYouTubeWatchUrl } from '../../../lib/player/youtube-url';
+import { localeSlugParams, requireLocale, useTranslations } from '../../../i18n';
+import { withLocale } from '../../../utils/paths';
+import { formatArtistNames } from '../../../utils/text';
+import { lyricLanguage, songPageDescription, songPageTitle } from '../../../utils/seo';
+
+export async function getStaticPaths() {
+  const songs = await getStaticCatalog().songs.getSongs();
+  return localeSlugParams(songs.map((song) => song.slug));
+}
+
+const lang = requireLocale(Astro.params.lang);
+const t = useTranslations(lang);
+const { slug } = Astro.params;
+const song = slug ? await getStaticCatalog().songs.getSongBySlug(slug) : null;
+
+if (!song) {
+  throw new Error(`Unknown song: ${slug ?? ''}`);
+}
+
+const parsed = parseYouTubeUrl(song.youtubeUrl);
+const watchUrl = parsed ? buildYouTubeWatchUrl(parsed.videoId, song.youtubeStartSeconds) : null;
+const contentLang = lyricLanguage(song.lyrics);
+const artists = formatArtistNames(song.artists.map((artist) => artist.name));
+---
+
+<SiteLayout
+  locale={lang}
+  title={songPageTitle(song, lang)}
+  description={songPageDescription(song, lang)}
+  path={`/songs/${song.slug}`}
+  ogType="music.song"
+  jsonLd={songPageJsonLd(song, lang, Astro.site)}
+  author={artists}
+>
+  <article class="detail-grid song-detail">
+    <div>
+      <p class="kicker">{t('song.kicker')}</p>
+      <h1 class="display song-detail__title">{song.title}</h1>
+      <p class="song-detail__byline">
+        {
+          song.artists.map((artist, index) => (
+            <>
+              {index > 0 && <span> & </span>}
+              <a href={withLocale(lang, `/artists/${artist.slug}`)}>{artist.name}</a>
+            </>
+          ))
+        }
+      </p>
+      <h2 class="kicker" id="lyrics-heading">{t('song.lyrics')}</h2>
+      <p class="song-detail__lyrics" lang={contentLang} aria-labelledby="lyrics-heading">
+        {song.lyrics}
+      </p>
+    </div>
+    <aside class="detail-side">
+      <p class="meta">
+        {
+          song.categories.map((category, index) => (
+            <>
+              {index > 0 && <span> · </span>}
+              <a href={withLocale(lang, `/categories/${category.slug}`)}>{category.name}</a>
+            </>
+          ))
+        }
+      </p>
+      <div class="btn-row">
+        <a class="ghost-link" href={`${withLocale(lang, '/play')}?song=${song.slug}`}
+          >{t('song.startRound')}</a
+        >
+        {
+          watchUrl ? (
+            <a class="ghost-link" href={watchUrl} rel="noreferrer noopener" target="_blank">
+              {song.demoClip ? t('song.demoClip') : t('song.openYoutube')}
+            </a>
+          ) : (
+            <p class="empty-copy">{t('song.noYoutube')}</p>
+          )
+        }
+      </div>
+    </aside>
+  </article>
+</SiteLayout>

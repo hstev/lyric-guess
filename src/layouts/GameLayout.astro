@@ -1,15 +1,27 @@
 ---
 import BaseLayout from './BaseLayout.astro';
 import '../styles/game.css';
+import type { Locale } from '../i18n';
+import { localePath, useTranslations } from '../i18n';
 
 type Props = {
+  locale: Locale;
   title: string;
   description: string;
 };
 
-const { title, description } = Astro.props;
+const { locale, title, description } = Astro.props;
+const t = useTranslations(locale);
 ---
 
-<BaseLayout title={title} description={description} canonicalPath="/play">
+<BaseLayout
+  locale={locale}
+  title={title}
+  description={description}
+  canonicalPath={localePath(locale, '/play')}
+  robots="noindex, follow"
+  skipHref="#game-main"
+  skipLabel={t('skip.lyrics')}
+>
   <slot />
 </BaseLayout>

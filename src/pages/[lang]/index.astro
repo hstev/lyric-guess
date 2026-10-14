@@ -1,0 +1,59 @@
+---
+import SiteLayout from '../../layouts/SiteLayout.astro';
+import SongList from '../../components/SongList.astro';
+import { featuredCategorySlug } from '../../data/seed-catalog';
+import { getStaticCatalog } from '../../lib/services/static-catalog';
+import { webSiteJsonLd } from '../../lib/seo/json-ld';
+import { localeParams, requireLocale, useTranslations } from '../../i18n';
+import { withLocale } from '../../utils/paths';
+
+export function getStaticPaths() {
+  return localeParams();
+}
+
+const lang = requireLocale(Astro.params.lang);
+const t = useTranslations(lang);
+const catalog = getStaticCatalog();
+const [featured, featuredSongs] = await Promise.all([
+  catalog.categories.getCategoryBySlug(featuredCategorySlug),
+  catalog.songs.getSongsByCategorySlug(featuredCategorySlug),
+]);
+---
+
+<SiteLayout
+  locale={lang}
+  title={t('home.title')}
+  description={t('home.description')}
+  path="/"
+  current="home"
+  jsonLd={webSiteJsonLd(lang, Astro.site)}
+>
+  <section class="home-hero">
+    <div>
+      <p class="kicker">{t('home.kicker')}</p>
+      <h1 class="display">{t('home.heading')}</h1>
+    </div>
+    <div>
+      <p class="lede">{t('home.lede')}</p>
+      <div class="btn-row" style="margin-top: 2rem;">
+        <a class="ghost-link" href={withLocale(lang, '/play')}>{t('home.begin')}</a>
+        <a class="ghost-link" href={withLocale(lang, '/categories')}>{t('home.browseGenres')}</a>
+      </div>
+    </div>
+  </section>
+
+  <section class="featured">
+    <div class="featured__head">
+      <div>
+        <p class="kicker">{t('home.featured')}</p>
+        <h2 class="display" style="font-size: clamp(2.5rem, 6vw, 4.5rem);">
+          {featured?.name ?? ''}
+        </h2>
+      </div>
+      <a class="ghost-link" href={withLocale(lang, `/categories/${featuredCategorySlug}`)}
+        >{t('home.openRoom')}</a
+      >
+    </div>
+    <SongList locale={lang} songs={featuredSongs} />
+  </section>
+</SiteLayout>

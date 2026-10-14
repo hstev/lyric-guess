@@ -1,0 +1,46 @@
+---
+import CategoryPills from '../../../components/CategoryPills.astro';
+import SiteLayout from '../../../layouts/SiteLayout.astro';
+import SongList from '../../../components/SongList.astro';
+import { getStaticCatalog } from '../../../lib/services/static-catalog';
+import { localeSlugParams, requireLocale, useTranslations } from '../../../i18n';
+import { withLocale } from '../../../utils/paths';
+import { categoryPageDescription, categoryPageTitle } from '../../../utils/seo';
+
+export async function getStaticPaths() {
+  const categories = await getStaticCatalog().categories.getCategories();
+  return localeSlugParams(categories.map((category) => category.slug));
+}
+
+const lang = requireLocale(Astro.params.lang);
+const t = useTranslations(lang);
+const { slug } = Astro.params;
+const catalog = getStaticCatalog();
+const category = slug ? await catalog.categories.getCategoryBySlug(slug) : null;
+const categories = await catalog.categories.getCategories();
+const songs = slug ? await catalog.songs.getSongsByCategorySlug(slug) : [];
+
+if (!category) {
+  throw new Error(`Unknown category: ${slug ?? ''}`);
+}
+---
+
+<SiteLayout
+  locale={lang}
+  title={categoryPageTitle(category, lang)}
+  description={categoryPageDescription(category, songs, lang)}
+  path={`/categories/${category.slug}`}
+  current="categories"
+>
+  <section class="page-hero">
+    <p class="kicker">{t('categories.kickerDetail')}</p>
+    <h1 class="display">{category.name}</h1>
+    <div class="btn-row">
+      <a class="ghost-link" href={`${withLocale(lang, '/play')}?category=${category.slug}`}
+        >{t('categories.playRoom')}</a
+      >
+    </div>
+  </section>
+  <CategoryPills locale={lang} categories={categories} currentSlug={category.slug} />
+  <SongList locale={lang} songs={songs} />
+</SiteLayout>

@@ -1,0 +1,37 @@
+---
+import CategoryPills from '../../../components/CategoryPills.astro';
+import SiteLayout from '../../../layouts/SiteLayout.astro';
+import { getStaticCatalog } from '../../../lib/services/static-catalog';
+import { localeParams, requireLocale, useTranslations } from '../../../i18n';
+import { withLocale } from '../../../utils/paths';
+
+export function getStaticPaths() {
+  return localeParams();
+}
+
+const lang = requireLocale(Astro.params.lang);
+const t = useTranslations(lang);
+const categories = await getStaticCatalog().categories.getCategories();
+---
+
+<SiteLayout
+  locale={lang}
+  title={t('categories.title')}
+  description={t('categories.description')}
+  path="/categories"
+  current="categories"
+>
+  <section class="page-hero">
+    <p class="kicker">{t('categories.kicker')}</p>
+    <h1 class="display">{t('categories.heading')}</h1>
+    <p class="lede">{t('categories.lede')}</p>
+  </section>
+  <CategoryPills locale={lang} categories={categories} />
+  <nav class="category-index" aria-label={t('categories.allAria')}>
+    {
+      categories.map((category) => (
+        <a href={withLocale(lang, `/categories/${category.slug}`)}>{category.name}</a>
+      ))
+    }
+  </nav>
+</SiteLayout>

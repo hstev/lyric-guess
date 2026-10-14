@@ -57,6 +57,12 @@ function seedIfNeeded(db: Database): void {
 
   db.exec('BEGIN');
   try {
+    run(db, 'DELETE FROM song_artists');
+    run(db, 'DELETE FROM song_categories');
+    run(db, 'DELETE FROM songs');
+    run(db, 'DELETE FROM artists');
+    run(db, 'DELETE FROM categories');
+
     for (const artist of seedArtists) {
       run(
         db,

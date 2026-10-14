@@ -1,41 +1,91 @@
 ---
-import '../styles/pages.css';
+import LanguageSwitch from '../components/LanguageSwitch.astro';
 import BaseLayout from './BaseLayout.astro';
-import { withBase } from '../utils/paths';
+import '../styles/pages.css';
+import type { Locale } from '../i18n';
+import { localePath, useTranslations } from '../i18n';
+import { withLocale } from '../utils/paths';
+
+type JsonLdValue = Record<string, unknown> | Record<string, unknown>[];
 
 type Props = {
+  locale: Locale;
   title: string;
   description: string;
-  canonicalPath: string;
-  current?: 'home' | 'play' | 'categories' | 'search';
+  path?: string | undefined;
+  current?: 'home' | 'play' | 'categories' | 'search' | undefined;
+  ogType?: 'website' | 'music.song' | 'profile' | undefined;
+  jsonLd?: JsonLdValue | undefined;
+  robots?: string | undefined;
+  author?: string | undefined;
+  languageSwitchPath?: string | undefined;
 };
 
-const { title, description, canonicalPath, current } = Astro.props;
+const {
+  locale,
+  title,
+  description,
+  path = '/',
+  current,
+  ogType,
+  jsonLd,
+  robots,
+  author,
+  languageSwitchPath,
+} = Astro.props;
+const t = useTranslations(locale);
+const canonicalPath = localePath(locale, path);
 ---
 
-<BaseLayout title={title} description={description} canonicalPath={canonicalPath}>
+<BaseLayout
+  locale={locale}
+  title={title}
+  description={description}
+  canonicalPath={canonicalPath}
+  ogType={ogType}
+  jsonLd={jsonLd}
+  robots={robots}
+  author={author}
+>
   <div class="site-shell">
     <header class="site-header">
-      <a class="wordmark" href={withBase('/')}>Lyric-Guess</a>
-      <nav class="nav" aria-label="Primary">
-        <a href={withBase('/play')} aria-current={current === 'play' ? 'page' : undefined}>Play</a>
-        <a
-          href={withBase('/categories')}
-          aria-current={current === 'categories' ? 'page' : undefined}>Categories</a
-        >
-        <a href={withBase('/search')} aria-current={current === 'search' ? 'page' : undefined}
-          >Search</a
-        >
-      </nav>
+      <a class="wordmark" href={withLocale(locale, '/')} data-locale-path="/">Lyric-Guess</a>
+      <div class="site-header__end">
+        <nav class="nav" aria-label={t('nav.primary')} data-i18n-aria="nav.primary">
+          <a
+            href={withLocale(locale, '/play')}
+            aria-current={current === 'play' ? 'page' : undefined}
+            data-i18n="nav.play"
+            data-locale-path="/play">{t('nav.play')}</a
+          >
+          <a
+            href={withLocale(locale, '/categories')}
+            aria-current={current === 'categories' ? 'page' : undefined}
+            data-i18n="nav.categories"
+            data-locale-path="/categories">{t('nav.categories')}</a
+          >
+          <a
+            href={withLocale(locale, '/search')}
+            aria-current={current === 'search' ? 'page' : undefined}
+            data-i18n="nav.search"
+            data-locale-path="/search">{t('nav.search')}</a
+          >
+        </nav>
+        <LanguageSwitch locale={locale} path={languageSwitchPath} />
+      </div>
     </header>
     <main id="content" class="site-main">
       <slot />
     </main>
     <footer class="site-footer">
-      <p>A listening room for lyric fragments.</p>
+      <p data-i18n="footer.tagline">{t('footer.tagline')}</p>
       <p>
-        <a href="https://github.com/hstev/lyric-guess" rel="noreferrer noopener">
-          Contribute on GitHub
+        <a
+          href="https://github.com/hstev/lyric-guess"
+          rel="noreferrer noopener"
+          data-i18n="footer.github"
+        >
+          {t('footer.github')}
         </a>
       </p>
     </footer>

@@ -32,7 +32,18 @@ export default defineConfig({
   site,
   base,
   trailingSlash: 'never',
-  integrations: [sitemap()],
+  integrations: [
+    sitemap({
+      filter: (page) => !page.includes('/play') && /\/(es|en)(\/|$)/.test(page),
+      i18n: {
+        defaultLocale: 'es',
+        locales: {
+          es: 'es-419',
+          en: 'en-US',
+        },
+      },
+    }),
+  ],
   build: {
     format: 'directory',
   },

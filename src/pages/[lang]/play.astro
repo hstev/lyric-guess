@@ -1,0 +1,26 @@
+---
+import GameLayout from '../../layouts/GameLayout.astro';
+import { localeParams, requireLocale, useTranslations } from '../../i18n';
+
+export function getStaticPaths() {
+  return localeParams();
+}
+
+const lang = requireLocale(Astro.params.lang);
+const t = useTranslations(lang);
+---
+
+<GameLayout locale={lang} title={t('play.title')} description={t('play.description')}>
+  <div id="game-root" class="game" data-locale={lang}></div>
+</GameLayout>
+
+<script>
+  import { mountGame } from '../../features/game/mount-game';
+  import { isLocale } from '../../i18n';
+
+  const root = document.getElementById('game-root');
+  const locale = root?.getAttribute('data-locale');
+  if (root && locale && isLocale(locale)) {
+    void mountGame(root, locale);
+  }
+</script>

@@ -1,32 +1,36 @@
 ---
 import type { Song } from '../types/catalog';
-import { withBase } from '../utils/paths';
+import type { Locale } from '../i18n';
+import { useTranslations } from '../i18n';
+import { withLocale } from '../utils/paths';
 import { formatArtistNames } from '../utils/text';
 
 type Props = {
+  locale: Locale;
   songs: Song[];
 };
 
-const { songs } = Astro.props;
+const { locale, songs } = Astro.props;
+const t = useTranslations(locale);
 ---
 
 {
   songs.length === 0 ? (
     <section class="status-panel">
-      <p class="kicker">Empty collection</p>
+      <p class="kicker">{t('empty.kicker')}</p>
       <h2 class="display" style="font-size: clamp(2rem, 5vw, 3.5rem); max-width: 12ch;">
-        Nothing in this room yet.
+        {t('empty.heading')}
       </h2>
-      <p class="empty-copy">Try another category, or start a round from the full catalog.</p>
-      <a class="ghost-link" href={withBase('/play')}>
-        Play anyway
+      <p class="empty-copy">{t('empty.copy')}</p>
+      <a class="ghost-link" href={withLocale(locale, '/play')}>
+        {t('empty.play')}
       </a>
     </section>
   ) : (
     <ul class="song-list">
       {songs.map((song) => (
         <li>
-          <a href={withBase(`/songs/${song.slug}`)}>
+          <a href={withLocale(locale, `/songs/${song.slug}`)}>
             <span class="song-list__title">{song.title}</span>
             <span class="song-list__meta">
               {formatArtistNames(song.artists.map((artist) => artist.name))}

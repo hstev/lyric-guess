@@ -1,25 +1,29 @@
 ---
 import type { Category } from '../types/catalog';
-import { withBase } from '../utils/paths';
+import type { Locale } from '../i18n';
+import { useTranslations } from '../i18n';
+import { withLocale } from '../utils/paths';
 
 type Props = {
+  locale: Locale;
   categories: Category[];
   currentSlug?: string | undefined;
   includeAll?: boolean;
 };
 
-const { categories, currentSlug, includeAll = true } = Astro.props;
+const { locale, categories, currentSlug, includeAll = true } = Astro.props;
+const t = useTranslations(locale);
 ---
 
-<div class="pills" role="navigation" aria-label="Categories">
+<div class="pills" role="navigation" aria-label={t('nav.categories')}>
   {
     includeAll && (
       <a
         class:list={['pill', { 'is-active': !currentSlug }]}
-        href={withBase('/categories')}
+        href={withLocale(locale, '/categories')}
         aria-current={!currentSlug ? 'page' : undefined}
       >
-        All
+        {t('categories.all')}
       </a>
     )
   }
@@ -27,7 +31,7 @@ const { categories, currentSlug, includeAll = true } = Astro.props;
     categories.map((category) => (
       <a
         class:list={['pill', { 'is-active': currentSlug === category.slug }]}
-        href={withBase(`/categories/${category.slug}`)}
+        href={withLocale(locale, `/categories/${category.slug}`)}
         aria-current={currentSlug === category.slug ? 'page' : undefined}
       >
         {category.name}

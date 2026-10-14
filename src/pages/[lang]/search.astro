@@ -1,0 +1,36 @@
+---
+import SiteLayout from '../../layouts/SiteLayout.astro';
+import { localeParams, requireLocale, useTranslations } from '../../i18n';
+
+export function getStaticPaths() {
+  return localeParams();
+}
+
+const lang = requireLocale(Astro.params.lang);
+const t = useTranslations(lang);
+---
+
+<SiteLayout
+  locale={lang}
+  title={t('search.title')}
+  description={t('search.description')}
+  path="/search"
+  current="search"
+>
+  <section class="page-hero">
+    <p class="kicker">{t('search.kicker')}</p>
+    <h1 class="display">{t('search.heading')}</h1>
+  </section>
+  <div id="search-root" data-locale={lang}></div>
+</SiteLayout>
+
+<script>
+  import { mountSearch } from '../../features/search/mount-search';
+  import { isLocale } from '../../i18n';
+
+  const root = document.getElementById('search-root');
+  const locale = root?.getAttribute('data-locale');
+  if (root && locale && isLocale(locale)) {
+    void mountSearch(root, locale);
+  }
+</script>
