@@ -1,6 +1,6 @@
 import type { Artist, Category, Song } from '../types/catalog';
 
-export const SEED_VERSION = '20261013-04';
+export const SEED_VERSION = '20261013-05';
 
 const createdAt = '2026-01-12T10:00:00.000Z';
 const updatedAt = createdAt;
@@ -13,6 +13,7 @@ export const seedArtists: Artist[] = [
   { id: 'artist_radio_mc', name: 'Radio MC', slug: 'radio-mc' },
   { id: 'artist_asir_ones', name: 'Asir Ones', slug: 'asir-ones' },
   { id: 'artist_noiseferatu', name: 'Noiseferatu', slug: 'noiseferatu' },
+  { id: 'artist_gambeta', name: 'Gambeta', slug: 'gambeta' },
 ];
 
 export const seedCategories: Category[] = [{ id: 'cat_rap', name: 'Rap', slug: 'rap' }];
@@ -166,6 +167,19 @@ const seedSongInputs: SeedSongInput[] = [
     durationSeconds: 11,
     demoClip: true,
     artistIds: ['artist_noiseferatu'],
+    categoryIds: ['cat_rap'],
+  },
+  {
+    id: 'c5590aa9-d1e9-4bac-9a8a-f5a5a8e31118',
+    slug: 'c5590aa9-d1e9-4bac-9a8a-f5a5a8e31118',
+    title: 'El propio 2',
+    lyrics: 'Guerra infinita, igual todo funciona desde la cárcel y las cárceles no rehabilitan,\nLos que se van no resucitan\nPolíticos no acaban el conflicto, lo necesitan ',
+    youtubeUrl: 'https://youtu.be/7wUqwkaTZNE',
+    youtubeStartSeconds: 149,
+    youtubeEndSeconds: 155,
+    durationSeconds: 6,
+    demoClip: true,
+    artistIds: ['artist_gambeta'],
     categoryIds: ['cat_rap'],
   },
 ];
